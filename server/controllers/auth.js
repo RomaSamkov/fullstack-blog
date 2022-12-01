@@ -66,5 +66,25 @@ export const login = async (req, res) => {
 
 export const getCurrent = async (req, res) => {
   try {
-  } catch (error) {}
+    const user = await User.findById(req.userId);
+
+    if (!user) {
+      return res.status(403).json({ message: "This User does not exist" });
+    }
+
+    const token = jwt.sign(
+      {
+        id: user._id,
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: "10d" }
+    );
+    res.json({
+      user,
+      token,
+    });
+  } catch (error) {
+    console.log(error);
+    res.json({ message: "Error in Access" });
+  }
 };
